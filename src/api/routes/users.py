@@ -6,6 +6,6 @@ router = APIRouter(
 )
 
 
-@router.post("/users")
-async def create_user(user_to_create: UserCreate) -> UserResponse:
+@router.post("/register", response_model=UserResponse, summary="Register a new user", description="This route allows you to register a new user.")
+async def register(user_to_create: UserCreate) -> UserResponse:
     return {"message": "User created successfully"}
