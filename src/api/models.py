@@ -1,7 +1,7 @@
 from sqlalchemy import Table,Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from database import Base
+from .database import Base
 
 user_profile_association = Table(
     "user_profile_association",

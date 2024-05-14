@@ -1,61 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from profile import Profile
 
-class User(BaseModel):
-    id: int
-    username: str
+
+class UserBase(BaseModel):
     email: str
-    password: str
-    is_active: bool
 
-    model_config = {"json_schema_extra": {
-            "examples": [
-                {
-                    "id": 1,
-                    "username": "johndoe",
-                    "email": "johndoe@example.com",
-                    "password": "password",
-                    "is_active": True
-                }
-            ]
-        }
-    }
-
-class UserCreate(BaseModel):
-    username: str
-    email: str
+class UserCreate(UserBase):
     password: str
 
-    model_config = {"json_schema_extra": {
-            "examples": [
-                {
-                    "username": "johndoe",
-                    "email": "johndoe@example.com",
-                    "password": "password"
-                }
-            ]
-        }
-    }
-
-class UserResponse(BaseModel):
+class User(UserBase):
     id: int
-    username: str
-    email: str
     is_active: bool
-
-    model_config = {"json_schema_extra": {
-            "examples": [
-                {
-                    "username": "johndoe",
-                    "email": "johndoe@example.com",
-                    
-                }
-            ]
-        }
-    }
-
-
-class UserInDB(User):
-    hashed_password: str
+    profiles: list[Profile]
+    
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed=True
+        
 
 
     
