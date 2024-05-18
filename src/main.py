@@ -6,11 +6,13 @@ import os
 from fastapi.security import OAuth2PasswordBearer
 
 from api.routes import users
+from api.routes import profiles
 
 load_dotenv()
 
 app = FastAPI()
 app.include_router(users.router)
+app.include_router(profiles.router)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 

@@ -25,6 +25,6 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, index=True)
 
     tutors = relationship("User", secondary=user_profile_association, back_populates='profiles')
