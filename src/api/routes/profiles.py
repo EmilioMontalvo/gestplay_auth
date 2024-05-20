@@ -33,16 +33,3 @@ async def read_profiles_me(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     current_user: User= await get_current_user(db,token)
 
     return crud.get_profiles_of_user(db,current_user.id)
-
-@router.post("/profiles/{profile_id}", summary="Assign a profile to a user", description="This route allows you to assign a profile to a user.")
-async def assign_profile_to_user(profile_id: int, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    current_user: User= await get_current_user(db,token)
-
-    return crud.assing_profile_to_user(db,profile_id,current_user.id)
-
-@router.delete("/profiles/{profile_id}", summary="Delete a profile", description="This route allows you to detach a profile from user.")
-async def detach_profile(profile_id: int, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    current_user: User= await get_current_user(db,token)
-
-    return crud.detach_profile_from_user(db,profile_id,current_user.id)
-
