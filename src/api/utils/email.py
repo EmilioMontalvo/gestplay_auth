@@ -3,6 +3,9 @@ from fastapi_mail import FastMail, MessageSchema,ConnectionConfig,MessageType
 from ..schemas.email import Email as EmailSchema
 from ..schemas.user import User
 import os
+from pathlib import Path
+
+
 
 
 conf = ConnectionConfig(
@@ -13,19 +16,21 @@ conf = ConnectionConfig(
     MAIL_SERVER = "smtp.gmail.com",
     MAIL_STARTTLS = True,
     MAIL_SSL_TLS = False,
-    USE_CREDENTIALS = True
+    USE_CREDENTIALS = True,
+    TEMPLATE_FOLDER= Path(__file__).parent/'templates/'
 )
 
-html = """
-<p>Thanks for using Fastapi-mail</p> 
-"""
 
-async def send_email(email: EmailSchema):
+async def send_email(email: EmailSchema,template:str="verification.html",subject:str="GestPlay",body:dict={"link":"https://gestplay.com"}):
     message = MessageSchema(
-        subject="Fastapi-Mail module",
+        subject=subject,
         recipients=email.model_dump().get("email"),
-        body=html,
+        template_body=body,
         subtype=MessageType.html)
     fm = FastMail(conf)
-    await fm.send_message(message)
-    return {"message": "email has been sent"}
+    try:
+        await fm.send_message(message, template_name=template)
+        return True
+    except ConnectionError as e:
+        # print(e)
+        return False

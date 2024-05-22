@@ -10,7 +10,8 @@ from ..database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from ..utils.auth import authenticate_user,create_access_token,ACCESS_TOKEN_EXPIRE_MINUTES,get_current_user,get_password_hash,oauth2_scheme
 from ..utils.email import send_email
-
+from ..utils import token_generation as token_utils
+import os
 
 models.Base.metadata.create_all(bind=engine) # create the tables in the database
 
@@ -40,7 +41,11 @@ async def register(user_to_create: UserCreate, db: Session = Depends(get_db)) ->
 
     mail_schema = EmailSchema(email=[created_user.email])
 
-    await send_email(mail_schema)
+    mail_dict = {
+        "link": f"{os.getenv("Frontend_URL")}/confirm-email/{token_utils.token(created_user.email)}/"
+    }
+
+    await send_email(mail_schema, body=mail_dict)
     return user_to_return
 
 @router.post("/token")
@@ -79,3 +84,26 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
 
 
 
+
+@router.post('/confirm-email/{token}/', status_code=status.HTTP_202_ACCEPTED)
+async def user_verification(token:str, db:Session=Depends(get_db)):
+    token_data = token_utils.verify_token(token)
+    if not token_data:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail= "Token for Email Verification has expired."
+        )
+    user = db.query(models.User).filter(models.User.email==token_data['email']).first()
+    if not user:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= f"User with email {user.email} does not exist"
+        )
+    user.is_active = True
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {
+        'message':'Email Verification Successful',
+        'status':status.HTTP_202_ACCEPTED
+    }
