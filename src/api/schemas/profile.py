@@ -9,6 +9,6 @@ class ProfileCreate(ProfileBase):
 
 class Profile(ProfileBase):
     id: int
-
+    name: str
     class Config:
         from_attributes = True

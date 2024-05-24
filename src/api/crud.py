@@ -69,3 +69,15 @@ def detach_profile_from_user(db: Session, profile_id: int, user_id: int):
     db.refresh(db_user)
     return db_profile
 
+def get_profile_if_user_owns_profile(db: Session, profile_id: int, user_id: int):
+    
+    ur_profiles=get_profiles_of_user(db, user_id)
+    db_profile = db.query(models.Profile).get(profile_id)
+
+    if db_profile in ur_profiles and db_profile is not None:
+        return db_profile
+    else:
+        return None
+
+def profile_exists(db: Session, profile_id: int):
+    return db.query(models.Profile).get(profile_id) is not None

@@ -85,7 +85,7 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
 
 
 
-@router.post('/confirm-email/{token}/', status_code=status.HTTP_202_ACCEPTED)
+@router.get('/confirm-email/{token}/', status_code=status.HTTP_202_ACCEPTED)
 async def user_verification(token:str, db:Session=Depends(get_db)):
     token_data = token_utils.verify_token(token)
     if not token_data:
