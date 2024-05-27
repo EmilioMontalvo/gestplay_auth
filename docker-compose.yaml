@@ -3,6 +3,7 @@ services:
 
   web:
     build: .
+    container_name: gestplay_auth_service
     ports:
       - "8000:8000"
     depends_on:
