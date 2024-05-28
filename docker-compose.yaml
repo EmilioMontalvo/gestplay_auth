@@ -3,11 +3,12 @@ services:
 
   web:
     build: .
-    container_name: gestplay_auth_service
+    container_name: auth_service
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - HOST=0.0.0.0
       - PORT=${PORT}
@@ -36,6 +37,11 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3      
     ports:
       - "5432:5432"
 
