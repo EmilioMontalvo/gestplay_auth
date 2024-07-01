@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from . import models
 from ..schemas.profile import Profile as schemeProfile
 from ..schemas.user import UserCreate
+from ..schemas.game_settings import GameSettingsCreate as schemeGameSettings
 
 #User Crud
 def get_user(db: Session, user_id: int):
@@ -87,3 +88,75 @@ def get_profile_if_user_owns_profile(db: Session, profile_id: int, user_id: int)
 
 def profile_exists(db: Session, profile_id: int):
     return db.query(models.Profile).get(profile_id) is not None
+
+
+# GameSettings CRUD
+def get_game_settings(db: Session, game_settings_id: int):
+    return db.query(models.GameSettings).filter(models.GameSettings.id == game_settings_id).first()
+
+def get_game_settings_by_profile_id(db: Session, profile_id: int):
+    return db.query(models.GameSettings).filter(models.GameSettings.profile_id_db == profile_id).first()
+
+def create_game_settings(db: Session, game_settings:schemeGameSettings, profile_id_db:int):
+
+    db_game_settings = models.GameSettings(profile_id_db=profile_id_db,
+                                            profile_id=game_settings.profile_id,
+                                            active=game_settings.active,
+                                            alpha_opacity=game_settings.alpha_opacity,
+                                            camera_id=game_settings.camera_id,
+                                            color=game_settings.color,
+                                            config_window_id=game_settings.config_window_id,
+                                            contrl_window_size=game_settings.contrl_window_size,
+                                            control_computer_window_position=game_settings.control_computer_window_position,
+                                            cursor_id=game_settings.cursor_id,
+                                            first_time=game_settings.first_time,
+                                            general_sound=game_settings.general_sound,
+                                            gesture_index=game_settings.gesture_index,
+                                            music=game_settings.music,
+                                            opacity=game_settings.opacity,
+                                            pointer_smooth=game_settings.pointer_smooth,
+                                            sfx=game_settings.sfx,
+                                            size=game_settings.size,
+                                            spd_down=game_settings.spd_down,
+                                            spd_left=game_settings.spd_left,
+                                            spd_right=game_settings.spd_right,
+                                            spd_up=game_settings.spd_up,
+                                            tick_interval_ms=game_settings.tick_interval_ms,
+                                            window_mode=game_settings.window_mode,
+                                            window_size_value=game_settings.window_size_value)
+    
+    db.add(db_game_settings)
+    db.commit()
+    db.refresh(db_game_settings)
+    return db_game_settings
+
+def update_game_settings(db: Session, game_settings: schemeGameSettings):
+    db_game_settings:models.GameSettings = db.query(models.GameSettings).get(game_settings.id)
+    db_game_settings.profile_id_db = game_settings.profile_id
+    db_game_settings.active = game_settings.active
+    db_game_settings.alpha_opacity = game_settings.alpha_opacity
+    db_game_settings.camera_id = game_settings.camera_id
+    db_game_settings.color = game_settings.color
+    db_game_settings.config_window_id = game_settings.config_window_id
+    db_game_settings.contrl_window_size = game_settings.contrl_window_size
+    db_game_settings.control_computer_window_position = game_settings.control_computer_window_position
+    db_game_settings.cursor_id = game_settings.cursor_id
+    db_game_settings.first_time = game_settings.first_time
+    db_game_settings.general_sound = game_settings.general_sound
+    db_game_settings.gesture_index = game_settings.gesture_index
+    db_game_settings.music = game_settings.music
+    db_game_settings.opacity = game_settings.opacity
+    db_game_settings.pointer_smooth = game_settings.pointer_smooth
+    db_game_settings.sfx = game_settings.sfx
+    db_game_settings.size = game_settings.size
+    db_game_settings.spd_down = game_settings.spd_down
+    db_game_settings.spd_left = game_settings.spd_left
+    db_game_settings.spd_right = game_settings.spd_right
+    db_game_settings.spd_up = game_settings.spd_up
+    db_game_settings.tick_interval_ms = game_settings.tick_interval_ms
+    db_game_settings.window_mode = game_settings.window_mode
+    db_game_settings.window_size_value = game_settings.window_size_value
+
+    db.commit()
+    db.refresh(db_game_settings)
+    return db_game_settings

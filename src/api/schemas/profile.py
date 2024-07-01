@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class ProfileBase(BaseModel):
     local_id: str
     name: str
