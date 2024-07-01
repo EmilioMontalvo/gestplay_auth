@@ -25,6 +25,11 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    local_id = Column(String, index=True)
+    name = Column(String, index=True)    
+    last_name = Column(String, index=True) 
+    image_path = Column(String, index=True) 
+    max_click_level = Column(Integer, index=True) 
+    max_cursor_level = Column(Integer, index=True) 
 
     tutors = relationship("User", secondary=user_profile_association, back_populates='profiles')

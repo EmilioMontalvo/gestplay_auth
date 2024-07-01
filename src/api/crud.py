@@ -31,7 +31,12 @@ def get_profiles(db: Session, skip: int = 0, limit: int = 100):
 
 def create_profile_for_user(db: Session, profile: schemeProfile, user_id: int):
     user=db.query(models.User).get(user_id)    
-    db_profile = models.Profile(name=profile.name)
+    db_profile = models.Profile(local_id=profile.local_id,
+                                name=profile.name,
+                                last_name=profile.last_name, 
+                                image_path=profile.image_path, 
+                                max_click_level=profile.max_click_level, 
+                                max_cursor_level=profile.max_cursor_level)
     db.add(db_profile)
     print(db_profile)
     

@@ -32,7 +32,14 @@ router = APIRouter(
 @router.post("/profiles/me", summary="Create a new profile", description="This route allows you to create a new profile.")
 async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile: ProfileCreate ,db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
-    profile_to_create=Profile(id=0,name=profile.name)    
+    profile_to_create=Profile(id=0,
+                              local_id=profile.local_id,
+                              name=profile.name,
+                              last_name=profile.last_name,
+                              image_path=profile.image_path,
+                              max_click_level=profile.max_click_level,
+                              max_cursor_level=profile.max_cursor_level
+                              )    
     return crud.create_profile_for_user(db,profile_to_create,current_user.id)
 
 @router.get("/profiles/me", summary="Get current user profiles", description="This route allows you to get the current user profile.")
