@@ -9,3 +9,5 @@ python-jose[cryptography]
 itsdangerous
 fastapi_mail
 jinja2
+motor
+pymongo

@@ -8,6 +8,8 @@ from fastapi.security import OAuth2PasswordBearer
 from api.routes import users
 from api.routes import profiles
 
+from api.db.mongo_db import connect_and_init_db, close_db_connect
+
 load_dotenv()
 
 app = FastAPI()
@@ -32,6 +34,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def startup_event():
+    print("Checking connection with MongoDB")
+    connected = await connect_and_init_db()
+    if not connected:
+        raise HTTPException(status_code=500, detail="No se pudo conectar a MongoDB")
+    else:
+        print("Connection with DB Succesfull!")
+
+app.add_event_handler("startup", startup_event)
 
 if __name__ == "__main__":
     uvicorn.run(app, host=os.getenv("HOST"),port=int(os.getenv("PORT")))
