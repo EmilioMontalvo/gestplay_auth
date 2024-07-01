@@ -2,9 +2,11 @@ import os
 from typing import Annotated
 from fastapi import Depends,APIRouter,HTTPException,status
 
+from ..db import crud
+
 from ..utils.email import send_email
-from ..database import SessionLocal, engine
-from .. import crud,models
+from ..db.database import SessionLocal, engine
+from ..db import models
 from ..schemas.profile import Profile, ProfileCreate
 from sqlalchemy.orm import Session
 from ..schemas.user import User,UserCreate,UserBase

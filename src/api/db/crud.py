@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from . import models
-from .schemas.profile import Profile as schemeProfile
-from .schemas.user import UserCreate
+from ..schemas.profile import Profile as schemeProfile
+from ..schemas.user import UserCreate
 
+#User Crud
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 

@@ -2,11 +2,13 @@ from datetime import timedelta
 from typing import Annotated
 from fastapi import Depends,APIRouter,HTTPException,status
 from fastapi.security import OAuth2PasswordRequestForm
+
+from ..db import crud
 from ..schemas.user import User,UserCreate,UserBase
 from ..schemas.token import Token
 from ..schemas.email import Email as EmailSchema
-from .. import crud,models
-from ..database import SessionLocal, engine
+from ..db import models
+from ..db.database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from ..utils.auth import authenticate_user,create_access_token,ACCESS_TOKEN_EXPIRE_MINUTES,get_current_user,get_password_hash,oauth2_scheme
 from ..utils.email import send_email

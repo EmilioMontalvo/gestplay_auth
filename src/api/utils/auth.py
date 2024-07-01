@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from typing import Annotated
 from ..schemas.token import TokenData
-from ..crud import get_user_by_email
+from ..db.crud import get_user_by_email
 import os
 
 
