@@ -1,11 +1,13 @@
-from mongo_db import get_db
 from bson import ObjectId
+from pydantic import BaseModel
+from api.db.mongo_db import get_db
+from motor.motor_asyncio import AsyncIOMotorClient,AsyncIOMotorDatabase
 
-async def create_document(collection_name: str, document: dict):
+async def create_document(collection_name: str, document: BaseModel):
     try:
         db = await get_db()
-        collection = db[collection_name]
-        result = await collection.insert_one(document)
+        collection= db[collection_name]
+        result = await collection.insert_one(document.model_dump())
         return result
     except Exception as e:
         print("Error al escribir en la base de datos:", e)
@@ -38,7 +40,7 @@ async def find_document(collection_name: str, id: str):
         return None
 
 #update_document
-async def update_letter_id(collection_name: str,id: str, document):
+async def update_document(collection_name: str,id: str, document: BaseModel):
     try:
         db = await get_db()
         collection = db[collection_name]

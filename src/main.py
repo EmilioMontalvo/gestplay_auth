@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 import uvicorn
 import os
 from fastapi.security import OAuth2PasswordBearer
-
+from motor.motor_asyncio import AsyncIOMotorClient
 from api.routes import users
 from api.routes import profiles
+from api.routes import game_profiles
 
 from api.db.mongo_db import connect_and_init_db, close_db_connect
 
@@ -14,7 +15,8 @@ load_dotenv()
 
 app = FastAPI()
 app.include_router(users.router)
-app.include_router(profiles.router)
+#app.include_router(profiles.router)
+app.include_router(game_profiles.router)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -34,6 +36,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 async def startup_event():
     print("Checking connection with MongoDB")

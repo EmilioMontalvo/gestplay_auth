@@ -1,14 +1,17 @@
 import os
 from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient
 
 load_dotenv()
 
-mongo_uri = os.getenv("MONGODB_URL") 
+mongo_uri = os.getenv("MONGO_URL")
+db_name = os.getenv('MONGODB_NAME')
 db_client: AsyncIOMotorClient = None
 
 async def get_db() -> AsyncIOMotorClient:
-    db_name = os.getenv('MONGODB_NAME')
+    global db_client
+    if db_client is None:        
+        db_client = AsyncIOMotorClient(mongo_uri)
     return db_client[db_name]
 
 async def connect_and_init_db():
@@ -18,7 +21,7 @@ async def connect_and_init_db():
             mongo_uri    
         )
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 

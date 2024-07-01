@@ -3,6 +3,7 @@ from bson import ObjectId
 
 class GameProfile(BaseModel):
     local_id: str
+    user_id: str
     first_name: str
     last_name: str
     image_path: str
@@ -12,7 +13,7 @@ class GameProfile(BaseModel):
 
 class GameProfileInDB(BaseModel):
     id: str = Field(..., example="6122a42e67a51d001555de9a")
-    letter: GameProfile
+    gameProfile: GameProfile
 
     @field_validator('id')
     def validate_object_id(cls, v):
