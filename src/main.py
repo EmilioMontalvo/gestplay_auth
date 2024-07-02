@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from api.db import models
 from api.db.database import engine
 from api.routes import users, profiles, game_settings, game_data
+from api.db.mongo_db import connect_and_init_db
 
 load_dotenv()
 
@@ -34,6 +35,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def startup_event():
+    print("Checking connection with MongoDB")
+    connected = await connect_and_init_db()
+    if not connected:
+        raise HTTPException(status_code=500, detail="No se pudo conectar a MongoDB")
+    else:
+        print("Connection with DB Succesfull!")
 
 if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)
