@@ -40,6 +40,26 @@ async def create_game_settings(token: Annotated[str, Depends(oauth2_scheme)],gam
     return crud.create_game_settings(db,game_settings,profile.id)
 
 
+@router.get("/game_settings", summary="Get current user game settings of a profile", description="This route allows you to get the current user game settings.")
+async def read_game_settings(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+
+    profile=await profile_verify(db,profile_id_db,current_user)
+
+    return crud.get_game_settings_of_profile(db,profile.id)
+
+
+@router.put("/game_settings", summary="Update current user game settings of a profile", description="This route allows you to update the current user game settings.")
+async def update_game_settings(token: Annotated[str, Depends(oauth2_scheme)],game_settings: GameSettingsCreate,profile_id_db:int, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+
+    profile=await profile_verify(db,profile_id_db,current_user)
+    settings = crud.get_game_settings_of_profile(db,profile.id)
+
+    return crud.update_game_settings(db,game_settings,settings.id)
+
+
+
 async def profile_verify(db: Session,profile_id:int,current_user: User):
     profile = crud.get_profile(db,profile_id)
     if profile is None:
@@ -52,3 +72,4 @@ async def profile_verify(db: Session,profile_id:int,current_user: User):
         raise HTTPException(status_code=403,detail="You don't own this profile")
 
     return profile
+
