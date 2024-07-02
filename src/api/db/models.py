@@ -66,3 +66,5 @@ class GameSettings(Base):
     window_size_value = Column(Integer, nullable=False)
 
     profile = relationship('Profile', uselist=False)
+
+

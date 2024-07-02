@@ -22,4 +22,8 @@ router = APIRouter(
 # GameData routes
 @router.post("/game_data", summary="Create a new game data", description="This route allows you to create a new game data.")
 async def create_game_data(token: Annotated[str, Depends(oauth2_scheme)],game_data: GameData,profile_id_db,game: str, db = Depends(get_db)):
+    
+    if not(game=="click" or game=="cursor"):
+        raise HTTPException(status_code=400,detail="Invalid game type")
+    
     return {"message": "The game data was created successfully."}
