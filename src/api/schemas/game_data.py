@@ -15,6 +15,9 @@ class GameData(BaseModel):
     game_data: Dict[str, List[GameDataEntry]]
     profile_id: str
 
-
+class GameDataMongoDB(GameData):
+    _id: str
+    game: str
+    profile_id_db: int
 
 
