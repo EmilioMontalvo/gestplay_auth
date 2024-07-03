@@ -15,7 +15,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - EMAIL_SECRET=${EMAIL_SECRET}
       - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_FROM}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
       - Frontend_URL=${Frontend_URL}
       - DB_NAME=${DB_NAME}
@@ -23,7 +23,9 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=db
       - DB_PORT=${DB_PORT}
-      
+      - MONGO_URL=${MONGO_URL}
+      - MONGODB_NAME=${MONGODB_NAME}
+     
       
   db:
     image: postgres:16.3-alpine
