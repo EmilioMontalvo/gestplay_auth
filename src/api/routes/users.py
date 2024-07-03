@@ -34,20 +34,31 @@ router = APIRouter(
 @router.post("/register", response_model=UserBase, summary="Register a new user", description="This route allows you to register a new user.")
 async def register(user_to_create: UserCreate, db: Session = Depends(get_db)) -> User:
     db_user = crud.get_user_by_email(db, email=user_to_create.email)
-    if db_user:
+    if db_user and db_user.is_active == True:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     user_to_create.password = get_password_hash(user_to_create.password)
-    created_user = crud.create_user(db, user_to_create)    
+
+    if db_user and db_user.is_active == False:
+        created_user = crud.update_user(db, user_to_create, db_user.id)
+    
+    else:
+        created_user = crud.create_user(db, user_to_create)
+    
     user_to_return=UserBase(email=created_user.email)
+    
+    try:
+        mail_schema = EmailSchema(email=[created_user.email])
 
-    mail_schema = EmailSchema(email=[created_user.email])
+        mail_dict = {
+            "link": f"{os.getenv("Frontend_URL")}/confirm-email/{token_utils.token(created_user.email)}/"
+        }
 
-    mail_dict = {
-        "link": f"{os.getenv("Frontend_URL")}/confirm-email/{token_utils.token(created_user.email)}/"
-    }
+        await send_email(mail_schema, body=mail_dict)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal mail server error")
 
-    await send_email(mail_schema, body=mail_dict)
     return user_to_return
 
 @router.post("/token")
