@@ -39,6 +39,7 @@ async def register(user_to_create: UserCreate, db: Session = Depends(get_db)) ->
     
     user_to_create.password = get_password_hash(user_to_create.password)
 
+    created_user = None
     if db_user and db_user.is_active == False:
         created_user = crud.update_user(db, user_to_create, db_user.id)
     

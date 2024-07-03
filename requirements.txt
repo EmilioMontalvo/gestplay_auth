@@ -4,6 +4,7 @@ pydantic[email]
 python-dotenv
 sqlalchemy
 psycopg2-binary
+passlib
 passlib[bcrypt]
 python-jose[cryptography]
 itsdangerous
@@ -11,3 +12,4 @@ fastapi_mail
 jinja2
 pymongo
 motor
+
