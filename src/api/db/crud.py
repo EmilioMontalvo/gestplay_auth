@@ -23,6 +23,14 @@ def create_user(db: Session, user: UserCreate):
     db.refresh(db_user)
     return db_user
 
+def update_user(db: Session, user: UserCreate, user_id: int):
+    db_user = db.query(models.User).get(user_id)
+    db_user.email = user.email
+    db_user.hashed_password = user.password
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 
 # Profile CRUD
 def get_profile(db: Session, profile_id: int):
