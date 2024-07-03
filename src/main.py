@@ -44,6 +44,8 @@ async def startup_event():
     else:
         print("Connection with DB Succesfull!")
 
+app.add_event_handler("startup", startup_event)
+
 if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)
     uvicorn.run(app, host=os.getenv("HOST"),port=int(os.getenv("PORT")))

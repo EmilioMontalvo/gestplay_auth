@@ -1,5 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,BeforeValidator
 from typing import List, Dict
+from bson import ObjectId
+from pydantic import Field
+from typing import Optional
+from pydantic.types import Annotated
+
+
+
+PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class GameDataEntry(BaseModel):
     completed: bool
@@ -16,8 +24,31 @@ class GameData(BaseModel):
     profile_id: str
 
 class GameDataMongoDB(GameData):
-    _id: str
+    id:Optional[PyObjectId] = Field(alias="_id", default=None)
     game: str
     profile_id_db: int
+
+    class Config:
+        populate_by_name=True
+        arbitrary_types_allowed=True
+        schema_extra = {
+            "example": {
+                "game_data": {
+                    "click": [
+                        {
+                            "completed": True,
+                            "date_time": "2021-08-08T00:00:00",
+                            "elapsed_time": 0.5,
+                            "level_id": "1",
+                            "mistake": 0,
+                            "profile_id": "1",
+                            "score": 100,
+                            "stars": 3
+                        }
+                    ]
+                },
+                "profile_id": "1"
+            }
+        }
 
 

@@ -8,14 +8,10 @@ mongo_uri = os.getenv("MONGO_URL")
 db_name = os.getenv('MONGODB_NAME')
 db_client: AsyncIOMotorClient = None
 
-async def get_db() -> AsyncIOMotorClient:
-    global db_client
-    if db_client is None:        
-        db_client = AsyncIOMotorClient(mongo_uri)
-    return db_client[db_name]
 
 async def connect_and_init_db():
     global db_client
+    global mongo_uri
     try:
         db_client = AsyncIOMotorClient(
             mongo_uri    
