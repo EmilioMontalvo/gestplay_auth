@@ -31,6 +31,17 @@ def update_user(db: Session, user: UserCreate, user_id: int):
     db.refresh(db_user)
     return db_user
 
+def set_last_used_profile(db: Session, user_id: int, profile_id: int):
+    db_user = db.query(models.User).get(user_id)
+    db_profile = db.query(models.Profile).get(profile_id)
+    db_user.last_used_profile=db_profile
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def get_last_used_profile(db: Session, user_id: int):
+    db_user = db.query(models.User).get(user_id)
+    return db_user.last_used_profile
 
 # Profile CRUD
 def get_profile(db: Session, profile_id: int):

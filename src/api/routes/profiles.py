@@ -10,7 +10,7 @@ from ..db import models
 from ..schemas.profile import Profile, ProfileCreate
 from sqlalchemy.orm import Session
 from ..schemas.user import User,UserCreate,UserBase
-from ..utils.auth import get_current_user,oauth2_scheme
+from ..utils.auth import get_current_user,oauth2_scheme,profile_verify
 from ..schemas.email import Email as EmailSchema
 from pydantic import EmailStr
 from ..utils import token_generation as token_utils
@@ -116,3 +116,23 @@ async def assign_profile(token:str, db: Session = Depends(get_db)):
         'message':'Profile assigned Successfuly',
         'status':status.HTTP_202_ACCEPTED
     }
+
+#get last used profile
+@router.get("/profiles/last", summary="Get last used profile", description="This route allows you to get the last used profile.")
+async def read_last_profile(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+
+    last_used_profile=crud.get_last_used_profile(db,current_user.id)
+
+    if last_used_profile is None:
+        raise HTTPException(status_code=404,detail="There is no last used profile")
+
+    return last_used_profile
+
+#set last used profile
+@router.put("/profiles/last", summary="Set last used profile", description="This route allows you to set the last used profile.")
+async def update_last_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id:int, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+    profile=await profile_verify(db,profile_id,current_user)
+
+    return crud.set_last_used_profile(db,profile.id,current_user.id)

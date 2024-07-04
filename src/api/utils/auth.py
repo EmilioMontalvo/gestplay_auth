@@ -5,7 +5,10 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from typing import Annotated
 from ..schemas.token import TokenData
+from sqlalchemy.orm import Session
 from ..db.crud import get_user_by_email
+from ..db import crud
+from ..schemas.user import User
 import os
 
 
@@ -60,3 +63,16 @@ def authenticate_user(Database, email: str, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+async def profile_verify(db: Session,profile_id:int,current_user: User):
+    profile = crud.get_profile(db,profile_id)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    if not crud.get_profiles_of_user(db,current_user.id):
+        raise HTTPException(status_code=400,detail="You don't have any profiles to share")
+    
+    profile_to_share=crud.get_profile_if_user_owns_profile(db,profile_id=profile_id,user_id=current_user.id)
+    if not profile_to_share:
+        raise HTTPException(status_code=403,detail="You don't own this profile")
+
+    return profile

@@ -19,8 +19,10 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
+    last_used_profile_id = Column(Integer, ForeignKey('profiles.id'))
 
     profiles = relationship("Profile",secondary=user_profile_association, back_populates='tutors')
+    last_used_profile = relationship("Profile", uselist=False)
 
 class Profile(Base):
     __tablename__ = "profiles"
