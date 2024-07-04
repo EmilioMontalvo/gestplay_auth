@@ -2,7 +2,7 @@ version: '3.9'
 services:
 
   web:
-    build: ${DOCKER_USERNAME}/gestplay-auth:latest
+    build: ${DOCKER_USERNAME}/gestplay-backend:latest
     container_name: auth_service
     ports:
       - "8000:8000"
