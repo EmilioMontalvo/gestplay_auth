@@ -30,7 +30,7 @@ router = APIRouter(
 
 # GameSettings routes
 
-@router.post("/game_settings", summary="Create a new game settings", description="This route allows you to create a new game settings.")
+@router.post("/game-settings", summary="Create a new game settings", description="This route allows you to create a new game settings.")
 async def create_game_settings(token: Annotated[str, Depends(oauth2_scheme)],game_settings: GameSettingsCreate,profile_id_db:int ,db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 
@@ -40,7 +40,7 @@ async def create_game_settings(token: Annotated[str, Depends(oauth2_scheme)],gam
     return crud.create_game_settings(db,game_settings,profile.id)
 
 
-@router.get("/game_settings", summary="Get current user game settings of a profile", description="This route allows you to get the current user game settings.")
+@router.get("/game-settings", summary="Get current user game settings of a profile", description="This route allows you to get the current user game settings.")
 async def read_game_settings(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int, db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 
@@ -49,7 +49,7 @@ async def read_game_settings(token: Annotated[str, Depends(oauth2_scheme)],profi
     return crud.get_game_settings_of_profile(db,profile.id)
 
 
-@router.put("/game_settings", summary="Update current user game settings of a profile", description="This route allows you to update the current user game settings.")
+@router.put("/game-settings", summary="Update current user game settings of a profile", description="This route allows you to update the current user game settings.")
 async def update_game_settings(token: Annotated[str, Depends(oauth2_scheme)],game_settings: GameSettingsCreate,profile_id_db:int, db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 

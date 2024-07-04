@@ -23,7 +23,7 @@ router = APIRouter(
 collection_name = "game_data"
 
 # GameData routes
-@router.post("/game_data", summary="Create a new game data", description="This route allows you to create a new game data.")
+@router.post("/game-data", summary="Create a new game data", description="This route allows you to create a new game data.")
 async def create_game_data(token: Annotated[str, Depends(oauth2_scheme)],game_data: GameData,profile_id_db,game: str, db = Depends(get_db_sql)):
     
     if not(game=="click" or game=="cursor"):
@@ -54,7 +54,7 @@ async def create_game_data(token: Annotated[str, Depends(oauth2_scheme)],game_da
     return game_data_db
 
 
-@router.get("/game_data", summary="Get current user game data of a profile", description="This route allows you to get the current user game data.")
+@router.get("/game-data", summary="Get current user game data of a profile", description="This route allows you to get the current user game data.")
 async def read_game_data(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int,game: str, db = Depends(get_db_sql)):
     if not(game=="click" or game=="cursor"):
         raise HTTPException(status_code=400,detail="Invalid game type")
@@ -70,7 +70,7 @@ async def read_game_data(token: Annotated[str, Depends(oauth2_scheme)],profile_i
     return result["game_data"]
 
 
-@router.put("/game_data", summary="Update a game data", description="This route allows you to update a game data.")
+@router.put("/game-data", summary="Update a game data", description="This route allows you to update a game data.")
 async def update_game_data(token: Annotated[str, Depends(oauth2_scheme)],game_data: GameData,profile_id_db:int,game: str, db = Depends(get_db_sql)):
     if not(game=="click" or game=="cursor"):
         raise HTTPException(status_code=400,detail="Invalid game type")

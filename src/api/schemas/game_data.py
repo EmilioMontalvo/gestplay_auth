@@ -52,3 +52,12 @@ class GameDataMongoDB(GameData):
         }
 
 
+class GameDataResponse(BaseModel):
+    game_data: GameData
+    profile_id: str
+
+    def dump(self):
+        return {self.profile_id: self.game_data.model_dump()}
+
+
+
