@@ -82,3 +82,27 @@ async def update_game_data(collection_name: str, profile_id: str, game: str, doc
     except Exception as e:
         print("Error al actualizar carta por ID:", e)
         return None
+    
+#add a game data entry to the game data of the level of a game
+async def add_game_data_entry(collection_name: str, profile_id: str, game: str, game_data_entry: BaseModel, level: int):
+    try:
+        # Obtén la colección desde tu base de datos MongoDB
+        # mongo_db = await get_mongo_db()
+        collection = mongo_db.get_collection(collection_name)
+
+        # Convierte game_data_entry a un diccionario
+        game_data_dict = game_data_entry.model_dump()
+
+        # Realiza la actualización en la base de datos
+        result = await collection.update_one(
+            {"profile_id_db": profile_id, "game": game},
+            {"$push": {f"game_data.{level}": game_data_dict}}
+        )
+
+        if result.modified_count == 1:
+            return result
+        else:
+            return None
+    except Exception as e:
+        print("Error al insertar game data item:", e)
+        return None

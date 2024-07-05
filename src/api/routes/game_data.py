@@ -1,13 +1,13 @@
 import os
 from typing import Annotated
 from fastapi import Depends,APIRouter,HTTPException,status
-from ..utils.auth import get_current_user,oauth2_scheme
+from ..utils.auth import get_current_user,oauth2_scheme,profile_verify
 import pymongo
 from ..db import crud, document_crud
 from ..db.database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from ..schemas.user import User
-from ..schemas.game_data import GameData, GameDataMongoDB
+from ..schemas.game_data import GameData, GameDataMongoDB, GameDataEntry
 
 def get_db_sql():
     db_sql = SessionLocal()
@@ -96,15 +96,26 @@ async def update_game_data(token: Annotated[str, Depends(oauth2_scheme)],game_da
 
     return game_data_temp
 
-async def profile_verify(db: Session,profile_id:int,current_user: User):
-    profile = crud.get_profile(db,profile_id)
-    if profile is None:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    if not crud.get_profiles_of_user(db,current_user.id):
-        raise HTTPException(status_code=400,detail="You don't have any profiles to share")
+#add a game data enntry to the game data of the level of a game
+@router.post("/profiles/{profile_id_db}/game-data/{game}/level/{level}", summary="Add a game data entry", description="This route allows you to add a game data entry.")
+async def add_game_data_entry(token: Annotated[str, Depends(oauth2_scheme)],game_data_entry: GameDataEntry,profile_id_db:int,game: str,level: int, db = Depends(get_db_sql)):
+    if not(game=="click" or game=="cursor"):
+        raise HTTPException(status_code=400,detail="Invalid game type")
     
-    profile_to_share=crud.get_profile_if_user_owns_profile(db,profile_id=profile_id,user_id=current_user.id)
-    if not profile_to_share:
-        raise HTTPException(status_code=403,detail="You don't own this profile")
+    current_user = await get_current_user(db,token)
+    profile = await profile_verify(db,profile_id_db,current_user)
 
-    return profile
+    result = await document_crud.find_game_data(collection_name,profile.id,game)
+
+    if result is None:
+        raise HTTPException(status_code=404,detail="Game data not found")
+
+    result = await document_crud.add_game_data_entry(collection_name,profile.id,game,game_data_entry,level)
+
+    if result is None:
+        raise HTTPException(status_code=500,detail="Internal server error")
+    
+    if result.modified_count == 1 or result.matched_count == 1:
+        return {"status": "success"}
+
+    return result
