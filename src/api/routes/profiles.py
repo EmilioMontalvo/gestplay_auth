@@ -87,6 +87,15 @@ async def share_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id
     else:
         raise HTTPException(status_code=500,detail="An error occurred while sharing the profile")
     
+#get profile by id
+@router.get("/profiles/me/{profile_id_db}", summary="Get a profile", description="This route allows you to get a profile.")
+async def read_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+
+    profile=await profile_verify(db,profile_id_db,current_user)
+
+    return profile
+    
 
 @router.get("/profiles/assign/{token}", summary="Assign a profile", description="This route allows you to assign a profile to a user.")
 async def assign_profile(token:str, db: Session = Depends(get_db)):
@@ -116,6 +125,13 @@ async def assign_profile(token:str, db: Session = Depends(get_db)):
         'message':'Profile assigned Successfuly',
         'status':status.HTTP_202_ACCEPTED
     }
+
+@router.delete("/profiles/{profile_id}", summary="Delete a profile", description="This route allows you to delete a profile.")
+async def delete_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id:int, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+    profile=await profile_verify(db,profile_id,current_user)
+
+    return crud.delete_profile(db,profile.id)
 
 #get last used profile
 @router.get("/profiles/last", summary="Get last used profile", description="This route allows you to get the last used profile.")
