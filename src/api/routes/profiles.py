@@ -36,7 +36,7 @@ async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile:
     current_user: User= await get_current_user(db,token)
     profile_to_create=Profile(id=0,
                               local_id=profile.local_id,
-                              name=profile.name,
+                              first_name=profile.first_name,
                               last_name=profile.last_name,
                               image_path=profile.image_path,
                               max_click_level=profile.max_click_level,
@@ -44,7 +44,7 @@ async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile:
                               )    
     return crud.create_profile_for_user(db,profile_to_create,current_user.id)
 
-@router.get("/profiles/me", summary="Get current user profiles", description="This route allows you to get the current user profile.")
+@router.get("/profiles/me", summary="Get current user profiles", description="This route allows you to get the user profile s.")
 async def read_profiles_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 
@@ -75,7 +75,7 @@ async def share_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id
 
     
     mail_dict = {
-        "link": f"{os.getenv("Frontend_URL")}/share-profile/{token_utils.profile_token(Profile(id=profile_to_share.id,name=profile_to_share.name),email=email)}/",
+        "link": f"{os.getenv("Frontend_URL")}/share-profile/{token_utils.profile_token(Profile(id=profile_to_share.id,first_name=profile_to_share.name),email=email)}/",
         "sender":current_user.email,
         "register":f"{os.getenv("Frontend_URL")}/register/"
     }

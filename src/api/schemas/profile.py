@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class ProfileBase(BaseModel):
     local_id: str
-    name: str
+    first_name: str
     last_name: str
     image_path: str
     max_click_level: int
