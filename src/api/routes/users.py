@@ -52,9 +52,9 @@ async def register(user_to_create: UserCreate, db: Session = Depends(get_db)) ->
         mail_schema = EmailSchema(email=[created_user.email])
 
         mail_dict = {
-            "link": f"{os.getenv("Frontend_URL")}/confirm-email/{token_utils.token(created_user.email)}/"
+            "link": f"{os.getenv("Frontend_URL")}/activate-account/{token_utils.token(created_user.email)}/"
         }
-
+        
         await send_email(mail_schema, body=mail_dict)
     except Exception as e:
         print(e)
