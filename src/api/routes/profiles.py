@@ -1,6 +1,6 @@
 import os
 from typing import Annotated
-from fastapi import Depends,APIRouter,HTTPException,status
+from fastapi import Depends,APIRouter,HTTPException,status,BackgroundTasks
 
 from ..db import crud
 
@@ -8,6 +8,11 @@ from ..utils.email import send_email
 from ..db.database import SessionLocal, engine
 from ..db import models
 from ..schemas.profile import Profile, ProfileCreate
+from ..schemas.game_settings import GameSettings, GameSettingsCreate
+from ..schemas.game_data import GameData
+from ..routes.game_data import create_game_data
+from ..routes.game_settings import create_game_settings
+
 from sqlalchemy.orm import Session
 from ..schemas.user import User,UserCreate,UserBase
 from ..utils.auth import get_current_user,oauth2_scheme,profile_verify
@@ -18,6 +23,59 @@ from ..utils import token_generation as token_utils
 
 models.Base.metadata.create_all(bind=engine) # create the tables in the database
 
+
+default_game_settings = GameSettingsCreate(
+    profile_id="-1",
+    window_mode=0,
+    general_sound=1,
+    music=1,
+    sfx=1,
+    control_computer_window_position=None,
+    first_time=True,
+    config_window_id=1,
+    contrl_window_size=[362, 475],
+    window_size_value=0,
+    alpha_opacity=255,
+    camera_id=0,
+    gesture_index=0,
+    spd_up=10,
+    spd_down=10,
+    spd_left=10,
+    spd_right=10,
+    pointer_smooth=65,
+    tick_interval_ms=16,
+    cursor_id=3,
+    size=100,
+    opacity=0.5,
+    color=[0.3098, 0.639, 0.866, 1],
+    active=True
+)
+
+default_cursor_game_data = GameData(
+    profile_id="-1",
+    game_data={
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": []
+    }
+)
+
+default_click_game_data = GameData(
+    profile_id="-1",
+    game_data={
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": []
+    }
+)
 
 def get_db():
     db = SessionLocal()
@@ -32,7 +90,7 @@ router = APIRouter(
 
 
 @router.post("/profiles/me", summary="Create a new profile", description="This route allows you to create a new profile.")
-async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile: ProfileCreate ,db: Session = Depends(get_db)):
+async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile: ProfileCreate , background_tasks: BackgroundTasks,db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
     profile_to_create=Profile(id=0,
                               local_id=profile.local_id,
@@ -41,8 +99,25 @@ async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile:
                               image_path=profile.image_path,
                               max_click_level=profile.max_click_level,
                               max_cursor_level=profile.max_cursor_level
-                              )    
-    return crud.create_profile_for_user(db,profile_to_create,current_user.id)
+                              )
+    
+    
+    created_profile=crud.create_profile_for_user(db,profile_to_create,current_user.id)
+
+    if not created_profile:
+        raise HTTPException(status_code=500,detail="An error occurred while creating the profile")
+    
+    # add default game settings for the profile
+    default_cursor_game_data.profile_id = str(created_profile.id)
+    default_click_game_data.profile_id = str(created_profile.id)
+    default_game_settings.profile_id = str(created_profile.id)
+
+    background_tasks.add_task(create_game_settings, token, default_game_settings, created_profile.id, db)
+    background_tasks.add_task(create_game_data, token, default_cursor_game_data, created_profile.id, "cursor", db)
+    background_tasks.add_task(create_game_data, token, default_click_game_data, created_profile.id, "click", db)
+
+
+    return created_profile
 
 @router.get("/profiles/me", summary="Get current user profiles", description="This route allows you to get the user profile s.")
 async def read_profiles_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
