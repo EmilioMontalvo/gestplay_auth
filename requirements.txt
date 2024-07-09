@@ -12,4 +12,4 @@ fastapi_mail
 jinja2
 pymongo
 motor
-
+firebase-admin
