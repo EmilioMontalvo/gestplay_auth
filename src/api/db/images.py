@@ -22,4 +22,13 @@ def upload_to_firebase(file: UploadFile, destination_blob_name):
 
     return blob.public_url
 
-
+def delete_from_firebase(destination_blob_name: str):
+    bucket = storage.bucket()
+    blob = bucket.blob(destination_blob_name)
+    
+    try:
+        # Eliminar el archivo
+        blob.delete()
+    except Exception as e:
+        # Manejo de errores, si el archivo no existe o hay otro problema
+        print(f"No file {destination_blob_name}: {e}")

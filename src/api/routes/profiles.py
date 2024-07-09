@@ -22,6 +22,7 @@ from ..schemas.email import Email as EmailSchema
 from pydantic import EmailStr
 from ..utils import token_generation as token_utils
 
+import time
 
 models.Base.metadata.create_all(bind=engine) # create the tables in the database
 collection_name = "game_data"
@@ -198,10 +199,12 @@ async def update_profile_image(token: Annotated[str, Depends(oauth2_scheme)],pro
 
     profile_to_update=await profile_verify(db,profile_id_db,current_user)
 
-
-    image_path = f"images/{current_user.email}/{profile_to_update.first_name}_{profile_to_update.last_name}.png"
+    old_image_path = profile_to_update.image_path
+    image_path = f"images/{current_user.email}/{profile_to_update.first_name}_{profile_to_update.last_name}_{int(time.time())}.png"
     url=""
-    try:
+
+    images.delete_from_firebase(old_image_path)
+    try:        
         url=images.upload_to_firebase(file,image_path)
     except Exception as e:
         print(e)
