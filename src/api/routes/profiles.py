@@ -4,6 +4,7 @@ from fastapi import Depends,APIRouter,HTTPException,status,BackgroundTasks,Uploa
 
 from ..db import crud
 from ..db import document_crud
+from ..db import images
 
 from ..utils.email import send_email
 from ..db.database import SessionLocal, engine
@@ -197,7 +198,15 @@ async def update_profile_image(token: Annotated[str, Depends(oauth2_scheme)],pro
 
     profile_to_update=await profile_verify(db,profile_id_db,current_user)
 
-    profile_to_update.image_path="hola"
+    url=""
+    try:
+        images.delete_from_firebase(profile_to_update.image_path)
+        url=images.upload_to_firebase(file,profile_to_update.id)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500,detail="An error occurred while updating the profile image")
+
+    profile_to_update.image_path=url
     
     updated_profile=crud.update_profile(db,profile_to_update,profile_to_update.id)
 
@@ -277,6 +286,10 @@ async def update_last_profile(token: Annotated[str, Depends(oauth2_scheme)],prof
     current_user: User= await get_current_user(db,token)
     profile=await profile_verify(db,profile_id,current_user)
 
-    return crud.set_last_used_profile(db,profile.id,current_user.id)
+    response=crud.set_last_used_profile(db,current_user.id,profile.id)
 
+    if not response:
+        raise HTTPException(status_code=500,detail="An error occurred while setting the last used profile")
+
+    return profile
 

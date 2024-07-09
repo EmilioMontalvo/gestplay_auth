@@ -32,12 +32,13 @@ def update_user(db: Session, user: UserCreate, user_id: int):
     return db_user
 
 def set_last_used_profile(db: Session, user_id: int, profile_id: int):
-    db_user = db.query(models.User).get(user_id)
-    db_profile = db.query(models.Profile).get(profile_id)
+    db_user:models.User = db.query(models.User).get(user_id)
+    db_profile:models.Profile = db.query(models.Profile).get(profile_id)
+    db_user.last_used_profile_id = db_profile.id
     db_user.last_used_profile=db_profile
     db.commit()
     db.refresh(db_user)
-    return db_user
+    return db_profile
 
 def get_last_used_profile(db: Session, user_id: int):
     db_user = db.query(models.User).get(user_id)
