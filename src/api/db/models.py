@@ -30,7 +30,6 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    local_id = Column(String, index=True)
     first_name = Column(String, index=True)    
     last_name = Column(String, index=True) 
     image_path = Column(String, index=True) 

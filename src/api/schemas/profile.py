@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
 class ProfileBase(BaseModel):
-    local_id: str
     first_name: str
     last_name: str
     image_path: str

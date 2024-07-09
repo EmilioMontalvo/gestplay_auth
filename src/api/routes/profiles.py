@@ -92,8 +92,7 @@ router = APIRouter(
 @router.post("/profiles/me", summary="Create a new profile", description="This route allows you to create a new profile.")
 async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile: ProfileCreate , background_tasks: BackgroundTasks,db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
-    profile_to_create=Profile(id=0,
-                              local_id=profile.local_id,
+    profile_to_create=Profile(id=0,                        
                               first_name=profile.first_name,
                               last_name=profile.last_name,
                               image_path=profile.image_path,

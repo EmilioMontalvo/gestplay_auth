@@ -31,7 +31,7 @@ class GameDataMongoDB(GameData):
     class Config:
         populate_by_name=True
         arbitrary_types_allowed=True
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "game_data": {
                     "click": [
