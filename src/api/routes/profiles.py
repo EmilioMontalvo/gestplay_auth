@@ -198,10 +198,11 @@ async def update_profile_image(token: Annotated[str, Depends(oauth2_scheme)],pro
 
     profile_to_update=await profile_verify(db,profile_id_db,current_user)
 
+
+    image_path = f"images/{current_user.email}/{profile_to_update.first_name}_{profile_to_update.last_name}.png"
     url=""
     try:
-        images.delete_from_firebase(profile_to_update.image_path)
-        url=images.upload_to_firebase(file,profile_to_update.id)
+        url=images.upload_to_firebase(file,image_path)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500,detail="An error occurred while updating the profile image")
