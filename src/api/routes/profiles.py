@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends,APIRouter,HTTPException,status,BackgroundTasks,UploadFile,File
 
 from ..db import crud
+from ..db import document_crud
 
 from ..utils.email import send_email
 from ..db.database import SessionLocal, engine
@@ -22,7 +23,7 @@ from ..utils import token_generation as token_utils
 
 
 models.Base.metadata.create_all(bind=engine) # create the tables in the database
-
+collection_name = "game_data"
 
 default_game_settings = GameSettingsCreate(
     profile_id="-1",
@@ -242,7 +243,21 @@ async def delete_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_i
     current_user: User= await get_current_user(db,token)
     profile=await profile_verify(db,profile_id,current_user)
 
-    return crud.delete_profile(db,profile.id)
+    response=crud.delete_profile(db,profile.id)
+
+    if not response:
+        raise HTTPException(status_code=500,detail="An error occurred while deleting the profile")
+    
+    delete_game_data_cursor = await document_crud.delete_game_data(collection_name,profile.id,"cursor")
+    delete_game_data_click = await document_crud.delete_game_data(collection_name,profile.id,"click")
+    if not delete_game_data_cursor:
+        raise HTTPException(status_code=500,detail="An error occurred while deleting the game data")
+    
+    if not delete_game_data_click:
+        raise HTTPException(status_code=500,detail="An error occurred while deleting the game data")
+    
+
+    return response
 
 #get last used profile
 @router.get("/profiles/last", summary="Get last used profile", description="This route allows you to get the last used profile.")
