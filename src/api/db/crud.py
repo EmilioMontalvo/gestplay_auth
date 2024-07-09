@@ -71,6 +71,18 @@ def create_profile_for_user(db: Session, profile: schemeProfile, user_id: int):
     db.refresh(user)
     return db_profile
 
+def update_profile(db: Session, profile: schemeProfile, profile_id: int):
+    db_profile = db.query(models.Profile).get(profile_id)
+    db_profile.first_name = profile.first_name
+    db_profile.last_name = profile.last_name
+    db_profile.image_path = profile.image_path
+    db_profile.max_click_level = profile.max_click_level
+    db_profile.max_cursor_level = profile.max_cursor_level
+    db.commit()
+    db.refresh(db_profile)
+    return db_profile
+
+
 def get_profiles_of_user(db: Session, user_id: int):
     user=db.query(models.User).get(user_id)
     return user.profiles

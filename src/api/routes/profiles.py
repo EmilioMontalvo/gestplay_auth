@@ -169,6 +169,20 @@ async def read_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id_
     profile=await profile_verify(db,profile_id_db,current_user)
 
     return profile
+
+
+@router.put("/profiles/me/{profile_id_db}", summary="Update a profile", description="This route allows you to update a profile.")
+async def update_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int,profile: ProfileCreate, db: Session = Depends(get_db)):
+    current_user: User= await get_current_user(db,token)
+
+    profile_to_update=await profile_verify(db,profile_id_db,current_user)
+
+    updated_profile=crud.update_profile(db,profile,profile_to_update.id)
+
+    if not updated_profile:
+        raise HTTPException(status_code=500,detail="An error occurred while updating the profile")
+
+    return updated_profile
     
 
 @router.get("/profiles/assign/{token}", summary="Assign a profile", description="This route allows you to assign a profile to a user.")
