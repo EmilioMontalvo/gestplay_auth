@@ -82,6 +82,21 @@ async def update_game_data(collection_name: str, profile_id: str, game: str, doc
     except Exception as e:
         print("Error al actualizar carta por ID:", e)
         return None
+
+
+#delete a game data document given a profile id and a game
+async def delete_game_data(collection_name: str, profile_id: str, game: str):
+    try:
+        #mongo_db = await get_mongo_db()
+        collection = mongo_db.get_collection(collection_name)
+        result = await collection.delete_one({"profile_id_db": profile_id, "game": game})
+        
+        if result.deleted_count == 1:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("Error al eliminar carta por ID:", e)
     
 #add a game data entry to the game data of the level of a game
 async def add_game_data_entry(collection_name: str, profile_id: str, game: str, game_data_entry: BaseModel, level: int):
