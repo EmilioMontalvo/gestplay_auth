@@ -1,8 +1,10 @@
-from sqlalchemy import Table,Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Table,Boolean, Column, ForeignKey, Integer, String,DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, Float, Boolean, String, ForeignKey
 from .database import Base
 from sqlalchemy.dialects.postgresql import ARRAY
+import datetime
+
 
 user_profile_association = Table(
     "user_profile_association",
@@ -70,3 +72,10 @@ class GameSettings(Base):
     profile = relationship('Profile', uselist=False)
 
 
+class TokenTable(Base):
+    __tablename__ = "token"
+    user_id = Column(Integer)
+    access_toke = Column(String(450), primary_key=True)
+    refresh_toke = Column(String(450),nullable=False)
+    status = Column(Boolean)
+    created_date = Column(DateTime, default=datetime.datetime.now())

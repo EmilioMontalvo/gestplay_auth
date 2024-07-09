@@ -43,6 +43,9 @@ def get_last_used_profile(db: Session, user_id: int):
     db_user = db.query(models.User).get(user_id)
     return db_user.last_used_profile
 
+def get_user_last_token(db: Session, user_id: int,token:str):    
+    return db.query(models.TokenTable).filter(models.TokenTable.user_id == user_id, models.TokenTable.access_toke==token).first()
+
 # Profile CRUD
 def get_profile(db: Session, profile_id: int):
     return db.query(models.Profile).filter(models.Profile.id == profile_id).first()

@@ -49,11 +49,23 @@ async def get_current_user(Database,token: Annotated[str, Depends(oauth2_scheme)
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
+
     except JWTError:
         raise credentials_exception
+    
+
     user = get_user_by_email(Database, email=token_data.email)
     if user is None:
         raise credentials_exception
+    
+    token = crud.get_user_last_token(Database,user.id,token)
+
+    if token is None:
+        raise credentials_exception
+    
+    if token.status == False:
+        raise credentials_exception
+
     return user
 
 def authenticate_user(Database, email: str, password: str):

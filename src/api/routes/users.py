@@ -14,6 +14,8 @@ from ..utils.auth import authenticate_user,create_access_token,ACCESS_TOKEN_EXPI
 from ..utils.email import send_email
 from ..utils import token_generation as token_utils
 import os
+from datetime import datetime
+from ..db.models import TokenTable
 
 models.Base.metadata.create_all(bind=engine) # create the tables in the database
 
@@ -85,7 +87,41 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
+
+    token_db = models.TokenTable(user_id=user.id,  access_toke=access_token,  refresh_toke="", status=True)
+    db.add(token_db)
+    db.commit()
+    db.refresh(token_db)
+
+    
     return Token(access_token=access_token, token_type="bearer")
+
+
+#logout route
+@router.post("/logout", summary="Logout a user", description="This route allows you to logout a user.")
+async def logout(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    #blacklist the token
+    current_user: User= await get_current_user(db,token)
+
+    token_record = db.query(models.TokenTable).all()
+    info=[]
+
+    for record in token_record :
+        print("record",record)
+        if (datetime.now() - record.created_date).days >1:
+            info.append(record.user_id)
+    if info:
+        existing_token = db.query(models.TokenTable).where(TokenTable.user_id.in_(info)).delete()
+        db.commit()
+        
+    existing_token = db.query(models.TokenTable).filter(models.TokenTable.user_id == current_user.id, models.TokenTable.access_toke==token).first()
+    if existing_token:
+        existing_token.status=False
+        db.add(existing_token)
+        db.commit()
+        db.refresh(existing_token)
+
+    return {"message":"Logout Successfully"} 
 
 
 @router.get("/users/me", response_model=UserBase, summary="Get current user", description="This route allows you to get the current user.")
