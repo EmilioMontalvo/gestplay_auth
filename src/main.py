@@ -14,6 +14,7 @@ load_dotenv()
 app = FastAPI(
         title="Gestplay API"
     )
+
 app.include_router(users.router)
 app.include_router(profiles.router)
 app.include_router(game_settings.router)

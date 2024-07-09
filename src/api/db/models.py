@@ -1,18 +1,9 @@
-from sqlalchemy import Table,Boolean, Column, ForeignKey, Integer, String,DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, Float, Boolean, String, ForeignKey
-from .database import Base
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, ARRAY, Float
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
-
-user_profile_association = Table(
-    "user_profile_association",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id")),
-    Column("profile_id", Integer, ForeignKey("profiles.id")),
-)
-
+Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
@@ -21,10 +12,10 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
-    last_used_profile_id = Column(Integer, ForeignKey('profiles.id'))
+    last_used_profile_id = Column(Integer, ForeignKey('profiles.id',ondelete='SET NULL'))
 
-    profiles = relationship("Profile",secondary=user_profile_association, back_populates='tutors')
-    last_used_profile = relationship("Profile", uselist=False)
+    profiles = relationship("Profile", back_populates='user', foreign_keys='Profile.user_id', cascade="all")
+    last_used_profile = relationship("Profile", uselist=False, foreign_keys=[last_used_profile_id])
 
 class Profile(Base):
     __tablename__ = "profiles"
@@ -34,15 +25,18 @@ class Profile(Base):
     last_name = Column(String, index=True) 
     image_path = Column(String, index=True) 
     max_click_level = Column(Integer, index=True) 
-    max_cursor_level = Column(Integer, index=True) 
+    max_cursor_level = Column(Integer, index=True)
 
-    tutors = relationship("User", secondary=user_profile_association, back_populates='profiles')
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    game_settings = relationship("GameSettings", uselist=False, back_populates='profile', cascade="all, delete-orphan",passive_deletes=True)
+    user = relationship("User", back_populates='profiles', foreign_keys=[user_id])
 
 class GameSettings(Base):
     __tablename__ = 'game_settings'
 
     id = Column(Integer, primary_key=True, index=True)
-    profile_id_db = Column(Integer, ForeignKey('profiles.id'), nullable=False)
+    profile_id_db = Column(Integer, ForeignKey('profiles.id',ondelete='CASCADE'), nullable=False)
     profile_id = Column(String, nullable=False)
     active = Column(Boolean, nullable=False)
     alpha_opacity = Column(Integer, nullable=False)
@@ -69,7 +63,6 @@ class GameSettings(Base):
     window_size_value = Column(Integer, nullable=False)
 
     profile = relationship('Profile', uselist=False)
-
 
 class TokenTable(Base):
     __tablename__ = "token"

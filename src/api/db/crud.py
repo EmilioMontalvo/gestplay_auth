@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models
-from ..schemas.profile import Profile as schemeProfile
+from ..schemas.profile import ProfileBase as schemeProfile
 from ..schemas.user import UserCreate
 from ..schemas.game_settings import GameSettingsCreate as schemeGameSettings
 

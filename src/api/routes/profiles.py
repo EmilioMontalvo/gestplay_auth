@@ -1,13 +1,13 @@
 import os
 from typing import Annotated
-from fastapi import Depends,APIRouter,HTTPException,status,BackgroundTasks
+from fastapi import Depends,APIRouter,HTTPException,status,BackgroundTasks,UploadFile,File
 
 from ..db import crud
 
 from ..utils.email import send_email
 from ..db.database import SessionLocal, engine
 from ..db import models
-from ..schemas.profile import Profile, ProfileCreate
+from ..schemas.profile import Profile, ProfileCreate,ProfileBase
 from ..schemas.game_settings import GameSettings, GameSettingsCreate
 from ..schemas.game_data import GameData
 from ..routes.game_data import create_game_data
@@ -92,7 +92,7 @@ router = APIRouter(
 @router.post("/profiles/me", summary="Create a new profile", description="This route allows you to create a new profile.")
 async def create_profiles(token: Annotated[str, Depends(oauth2_scheme)],profile: ProfileCreate , background_tasks: BackgroundTasks,db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
-    profile_to_create=Profile(id=0,                        
+    profile_to_create=ProfileBase(                       
                               first_name=profile.first_name,
                               last_name=profile.last_name,
                               image_path=profile.image_path,
@@ -183,6 +183,29 @@ async def update_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_i
         raise HTTPException(status_code=500,detail="An error occurred while updating the profile")
 
     return updated_profile
+
+#set profile image
+@router.put("/profiles/me/{profile_id_db}/image", summary="Set profile image", description="This route allows you to set the profile image.")
+async def update_profile_image(token: Annotated[str, Depends(oauth2_scheme)],profile_id_db:int,file: UploadFile=File(...), db: Session = Depends(get_db)):
+    
+    if file.content_type not in ["image/png", "image/jpeg"]:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only PNG and JPEG images are allowed.")
+    
+    
+    current_user: User= await get_current_user(db,token)
+
+    profile_to_update=await profile_verify(db,profile_id_db,current_user)
+
+    profile_to_update.image_path="hola"
+    
+    updated_profile=crud.update_profile(db,profile_to_update,profile_to_update.id)
+
+
+
+    if not updated_profile:
+        raise HTTPException(status_code=500,detail="An error occurred while updating the profile image")
+
+    return updated_profile
     
 
 @router.get("/profiles/assign/{token}", summary="Assign a profile", description="This route allows you to assign a profile to a user.")
@@ -240,3 +263,5 @@ async def update_last_profile(token: Annotated[str, Depends(oauth2_scheme)],prof
     profile=await profile_verify(db,profile_id,current_user)
 
     return crud.set_last_used_profile(db,profile.id,current_user.id)
+
+
