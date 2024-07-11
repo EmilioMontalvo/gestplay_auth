@@ -128,7 +128,7 @@ async def read_profiles_me(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     return crud.get_profiles_of_user(db,current_user.id)
 
 #share profile
-@router.post("/profiles/share", summary="Share a profile", description="This route allows you to share a profile with another user.")
+#@router.post("/profiles/share", summary="Share a profile", description="This route allows you to share a profile with another user.")
 async def share_profile(token: Annotated[str, Depends(oauth2_scheme)],profile_id:int, email:EmailStr, db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 
@@ -222,7 +222,7 @@ async def update_profile_image(token: Annotated[str, Depends(oauth2_scheme)],pro
     return updated_profile
     
 
-@router.get("/profiles/assign/{token}", summary="Assign a profile", description="This route allows you to assign a profile to a user.")
+#@router.get("/profiles/assign/{token}", summary="Assign a profile", description="This route allows you to assign a profile to a user.")
 async def assign_profile(token:str, db: Session = Depends(get_db)):
     token_data = token_utils.verify_profile_token(token)
     if not token_data:
