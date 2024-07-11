@@ -50,7 +50,7 @@ async def read_game_settings(token: Annotated[str, Depends(oauth2_scheme)],profi
 
 
 @router.put("/game-settings", summary="Update current user game settings of a profile", description="This route allows you to update the current user game settings.")
-async def update_game_settings(token: Annotated[str, Depends(oauth2_scheme)],game_settings: GameSettingsCreate,profile_id_db:int, db: Session = Depends(get_db)):
+async def update_game_settings(token: Annotated[str, Depends(oauth2_scheme)],game_settings: dict,profile_id_db:int, db: Session = Depends(get_db)):
     current_user: User= await get_current_user(db,token)
 
     profile=await profile_verify(db,profile_id_db,current_user)

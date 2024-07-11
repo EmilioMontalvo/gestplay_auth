@@ -164,32 +164,17 @@ def create_game_settings(db: Session, game_settings:schemeGameSettings, profile_
     db.refresh(db_game_settings)
     return db_game_settings
 
-def update_game_settings(db: Session, game_settings: schemeGameSettings, game_settings_id:int):
-    db_game_settings:models.GameSettings = db.query(models.GameSettings).get(game_settings_id)
-    db_game_settings.profile_id=game_settings.profile_id
-    db_game_settings.active=game_settings.active
-    db_game_settings.alpha_opacity=game_settings.alpha_opacity
-    db_game_settings.camera_id=game_settings.camera_id
-    db_game_settings.color=game_settings.color
-    db_game_settings.config_window_id=game_settings.config_window_id
-    db_game_settings.contrl_window_size=game_settings.contrl_window_size
-    db_game_settings.control_computer_window_position=game_settings.control_computer_window_position
-    db_game_settings.cursor_id=game_settings.cursor_id
-    db_game_settings.first_time=game_settings.first_time
-    db_game_settings.general_sound=game_settings.general_sound
-    db_game_settings.gesture_index=game_settings.gesture_index
-    db_game_settings.music=game_settings.music
-    db_game_settings.opacity=game_settings.opacity
-    db_game_settings.pointer_smooth=game_settings.pointer_smooth
-    db_game_settings.sfx=game_settings.sfx
-    db_game_settings.size=game_settings.size
-    db_game_settings.spd_down=game_settings.spd_down
-    db_game_settings.spd_left=game_settings.spd_left
-    db_game_settings.spd_right=game_settings.spd_right
-    db_game_settings.spd_up=game_settings.spd_up
-    db_game_settings.tick_interval_ms=game_settings.tick_interval_ms
-    db_game_settings.window_mode=game_settings.window_mode
-    db_game_settings.window_size_value=game_settings.window_size_value
+def update_game_settings(db: Session, game_settings: dict, game_settings_id: int):
+    db_game_settings: models.GameSettings = db.query(models.GameSettings).get(game_settings_id)
+    
+    # Iterar sobre los elementos del diccionario y actualizar solo los valores presentes
+    for key, value in game_settings.items():
+        if hasattr(db_game_settings, key):
+            setattr(db_game_settings, key, value)
+    
+    db.commit()
+    db.refresh(db_game_settings)
+    return db_game_settings
 
 
     db.commit()
