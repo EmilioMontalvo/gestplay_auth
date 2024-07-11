@@ -31,6 +31,33 @@ class GameSettingsBase(BaseModel):
 class GameSettingsCreate(GameSettingsBase):
     pass
 
+
+# Properties to receive on item update (they are optional)
+class GameSettingsUpdate(BaseModel):
+    alpha_opacity: Optional[int]=None
+    camera_id: Optional[int] = None
+    color: Optional[List[float]] = None
+    config_window_id: Optional[int] = None
+    contrl_window_size: Optional[List[int]] = None
+    control_computer_window_position: Optional[List[int]] = None
+    cursor_id: Optional[int] = None 
+    first_time: Optional[bool] = None
+    general_sound: Optional[float] = None
+    gesture_index: Optional[int] = None
+    music: Optional[float] = None
+    opacity: Optional[float] = None
+    pointer_smooth: Optional[int] = None
+    sfx: Optional[float] = None
+    size: Optional[int] = None
+    spd_down: Optional[int] = None
+    spd_left: Optional[int] = None
+    spd_right: Optional[int] = None
+    spd_up: Optional[int] = None
+    tick_interval_ms: Optional[int] = None
+    window_mode: Optional[int] = None
+    window_size_value: Optional[int] = None
+
+
 class GameSettings(GameSettingsBase):
     id: int
     id_profile_db: int
