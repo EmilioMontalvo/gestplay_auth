@@ -13,12 +13,12 @@ class GameSettingsBase(BaseModel):
     control_computer_window_position: Optional[List[int]]
     cursor_id: int
     first_time: bool
-    general_sound: int
+    general_sound: float
     gesture_index: int
-    music: int
+    music: float
     opacity: float
     pointer_smooth: int
-    sfx: int
+    sfx: float
     size: int
     spd_down: int
     spd_left: int
