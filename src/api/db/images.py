@@ -6,7 +6,7 @@ import os
 
 # Inicializar la aplicación Firebase
 base_dir = os.path.dirname(os.path.dirname(__file__))
-key_path = os.path.join(base_dir, f"db\keys\serviceAccountKey.json")
+key_path = os.path.join(base_dir, "db", "keys", "serviceAccountKey.json")
 
 cred = credentials.Certificate(key_path)
 firebase_admin.initialize_app(cred, {
