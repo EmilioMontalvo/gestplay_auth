@@ -35,6 +35,7 @@ class User(UserBase):
     id: int
     is_active: bool
     profiles: list[Profile]
+    last_used_profile: Profile
     
     class Config:
         from_attributes = True
