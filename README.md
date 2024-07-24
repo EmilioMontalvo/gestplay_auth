@@ -32,7 +32,7 @@ Please make sure you have these requirements set up before proceeding with the i
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/project-name.git
+    git clone https://github.com/EmilioMontalvo/gestplay_auth.git
     ```
 
 2. Create a virtual environment:
