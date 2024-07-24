@@ -70,4 +70,4 @@ The API documentation can be found at `http://localhost:8000/docs`.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [APACHE LICENSE 2.0](LICENSE).
