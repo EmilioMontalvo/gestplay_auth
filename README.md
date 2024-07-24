@@ -17,7 +17,8 @@ In order to use this service, you will need the following:
 
 - MongoDB database: The API also requires a MongoDB database to store game data and perform certain operations.
 
-- Gmail account: You will need a Gmail account to send emails for password reset and other notifications.
+- Gmail account: You will need a Gmail account and an App password to send emails for password reset and other notifications.
+  Recomended tutorial: [Tutorial](https://www.youtube.com/watch?v=g_j6ILT-X0k)
 
 - Firebase storage service keys: You will need a JSON file containing the service keys for Firebase storage. This is necessary for storing user profile pictures. the file should be placed in the route: src\api\db\keys\serviceAccountKey.json.
 
