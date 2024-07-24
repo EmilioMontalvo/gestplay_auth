@@ -27,6 +27,9 @@ In order to use this service, you will need the following:
 
 Please make sure you have these requirements set up before proceeding with the installation.
 
+## Extra
+- The docker the file [docker-compose.yml](https://github.com/EmilioMontalvo/gestplay_auth/blob/development/docker-compose.yaml) allows you to build a postgress database using the env variables
+- The docker the file [docker-compose-build.yml](https://github.com/EmilioMontalvo/gestplay_auth/blob/development/docker-compose-build.yaml) allows you to build the service and the postgressdb in docker
 
 ## Installation
 1. Clone the repository:
