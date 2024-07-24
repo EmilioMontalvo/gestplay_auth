@@ -1,4 +1,4 @@
-# gestplay
+# Gestplay
  API for gestplay
 
 ## Table of Contents
