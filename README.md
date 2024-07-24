@@ -1,5 +1,5 @@
-# gestplay_auth
- Authentication service for gestplay
+# gestplay
+ API for gestplay
 
 ## Table of Contents
 
@@ -8,8 +8,25 @@
 - [API Documentation](#api-documentation)
 - [License](#license)
 
-## Installation
+## Requirements
 
+In order to use this service, you will need the following:
+
+- PostgreSQL database: The API requires a PostgreSQL database to store user information and authentication data.
+
+- MongoDB database: The API also requires a MongoDB database to store game data and perform certain operations.
+
+- Gmail account: You will need a Gmail account to send emails for password reset and other notifications.
+
+- Firebase storage service keys: You will need a JSON file containing the service keys for Firebase storage. This is necessary for storing user profile pictures. the file should be placed in the route: src\api\db\keys\serviceAccountKey.json.
+
+![Genarate new private key in firebase](image.png)
+
+
+Please make sure you have these requirements set up before proceeding with the installation.
+
+
+## Installation
 1. Clone the repository:
 
     ```bash
@@ -28,7 +45,9 @@
     .\env\Scripts\activate
     ```
 
-4. Install the dependencies:
+4. Create a `.env` file based on the `.env.template` file.
+
+5. Install the dependencies:
 
     ```bash
     pip install -r requirements.txt
